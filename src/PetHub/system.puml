@@ -1,0 +1,56 @@
+@startuml container
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/users_cog.puml
+!include FONTAWESOME/user_check.puml
+!include FONTAWESOME/search_location.puml
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/money_check_alt.puml
+!include DEVICONS/angular.puml
+!include DEVICONS/java.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS2/spring.puml
+
+
+
+LAYOUT_WITH_LEGEND()
+
+Person(userDefault, "Usuário", "Público", $sprite="users")
+Person(userOps, "Colaborador", "Restrito", $sprite="user_check")
+Person(userAdmin, "Administrador", "Admin", $sprite="users_cog")
+
+System_Boundary(app, "Aplicação PetHub") {
+    System(webApp, "Aplicação Web", "Java and Spring MVC","Entrega o conteúdo estático inicial e a SPA no browser", $sprite="spring")
+    Container(spa, "Single-Page Application", "Javascript e Angular", "Entrega via Browser as funcionalidades por nível de acesso do usuário.", $sprite="angular")
+    Container(mobileApp, "Mobile App", "Angular", "Entrega via Aplicativo Mobile funcionalidades limitadas para o usuário comum.", $sprite="angular")
+    Container(api, "API", "Java and Spring MVC", "Recebe e devolve informações para a SPA e o Mobile App", $sprite="java")
+    ContainerDb(db, "Banco de Dados Relacional", "PostgreSQL", $sprite="postgresql")
+}    
+
+System_Ext(banc, "API de Pagamentos", "Transações Financeiras", $sprite="money_check_alt")
+System_Ext(rast, "API de Rastreamento", "Rastreamento Veicular", $sprite="search_location")
+
+Rel(userDefault, mobileApp, "Utiliza", "HTTP")
+
+Rel(userAdmin, webApp, "Utiliza" , "HTTP")
+Rel(userAdmin, spa, "Utiliza")
+
+Rel(userOps, webApp, "Utiliza" , "HTTP")
+Rel(userOps, spa, "Utiliza")
+
+Rel(api, banc, "Consome", "REST")
+Rel(api, rast, "Consome", "REST")
+
+Rel(api, db, "Lê e escreve", "JDBC")
+
+Rel(webApp, spa, "Entrega")
+
+Rel(spa, api, "Consome", "REST")
+Rel(mobileApp, api, "Consome", "REST")
+
+@enduml

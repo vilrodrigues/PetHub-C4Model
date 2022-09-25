@@ -1,0 +1,58 @@
+@startuml mobile
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/search_location.puml
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/money_check_alt.puml
+!include DEVICONS/angular.puml
+!include DEVICONS/java.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS2/spring.puml
+
+LAYOUT_WITH_LEGEND()
+
+System(webApp, "Aplicação Web", "Java and Spring MVC","Entrega o conteúdo estático inicial e a SPA no browser", $sprite="spring")
+Container(mobileApp, "Mobile App", "Angular", "Entrega via Aplicativo Mobile funcionalidades limitadas para o usuário comum.", $sprite="angular")
+
+Rel(webApp, spa, "Entrega")
+
+Container(api, "API", "Java and Spring MVC", "Recebe e devolve informações para a SPA e o Mobile App", $sprite="java")
+
+System_Boundary(spa, "Single-Page Application") {
+    Container(home, "Homepage", "Angular", "Recepciona o usuário com uma tela inicial padrão", $sprite="angular")
+    Container(login, "Formulário de Login/Cadastro", "Angular", "Coleta as informações de login/cadastro do usuário", $sprite="angular")
+    Container(menu, "Lista as Categorias de Operações Disponíveis", "Angular", "Redireciona o usuário para a categoria de operação desejada", $sprite="angular")
+
+    Container(pets, "Pets", "Angular", "Operações de Pets", $sprite="angular")
+    Container(doacoes, "Doações", "Angular", "Operações de Doações", $sprite="angular")
+    Container(administrativas, "Administrativo", "Angular", "Operações Administrativas", $sprite="angular")
+    Container(financeiras, "Financeiro", "Angular", "Operações Financeiras", $sprite="angular")
+    Container(logisticas, "Logística", "Angular", "Operações Logísticas", $sprite="angular")
+}    
+
+Rel(home, login, "Redireciona")
+Rel(login, menu, "Redireciona")
+Rel(menu, pets, "Redireciona")
+Rel(menu, doacoes, "Redireciona")
+Rel(menu, administrativas, "Redireciona")
+Rel(menu, financeiras, "Redireciona")
+Rel(menu, logisticas, "Redireciona")
+
+Rel(mobileApp, api, "Consome", "REST")
+Rel(spa, api, "Consome", "REST")
+
+ContainerDb(db, "Banco de Dados Relacional", "PostgreSQL", $sprite="postgresql")
+
+Rel(api, db, "Lê e escreve", "JDBC")
+
+System_Ext(banc, "API de Pagamentos", "Transações Financeiras", $sprite="money_check_alt")
+System_Ext(rast, "API de Rastreamento", "Rastreamento Veicular", $sprite="search_location")
+
+Rel(api, banc, "Consome", "REST")
+Rel(api, rast, "Consome", "REST")
+
+@enduml

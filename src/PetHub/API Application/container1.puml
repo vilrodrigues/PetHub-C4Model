@@ -1,0 +1,45 @@
+@startuml api
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/search_location.puml
+!include FONTAWESOME/money_check_alt.puml
+!include DEVICONS/angular.puml
+!include DEVICONS/java.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS2/spring.puml
+
+LAYOUT_WITH_LEGEND()
+
+System(webApp, "Aplicação Web", "Java and Spring MVC","Entrega o conteúdo estático inicial e a SPA no browser", $sprite="spring")
+Container(spa, "Single-Page Application", "Javascript e Angular", "Entrega via Browser as funcionalidades por nível de acesso do usuário.", $sprite="angular")
+
+Rel(webApp, spa, "Entrega")
+
+Container(mobileApp, "Mobile App", "Angular", "Entrega via Aplicativo Mobile funcionalidades limitadas para o usuário comum.", $sprite="angular")
+
+System_Ext(banc, "API de Pagamentos", "Transações Financeiras", $sprite="money_check_alt")
+System_Ext(rast, "API de Rastreamento", "Rastreamento Veicular", $sprite="search_location")
+
+System_Boundary(api, "API") {
+   Container(auth, "Autenticação", "Spring REST controller", "Sistema de autenticação/autorização", $sprite="spring")
+   Container(log, "Logística", "Spring REST controller", "Controle de veículos e armazenamento", $sprite="spring")
+   Container(fin, "Financeiro", "Spring REST controller", "Operações financeiras", $sprite="spring")
+   Container(adm, "Administração", "Spring REST controller", "Processos internos e relatórios", $sprite="spring")
+   Container(ops, "Operacional", "Spring REST controller", "Registro de operações", $sprite="spring")
+}
+
+ContainerDb(db, "Banco de Dados Relacional", "PostgreSQL", $sprite="postgresql")
+
+Rel(api, db, "Lê e escreve", "JDBC")
+
+Rel(fin, banc, "Consome", "REST")
+Rel(log, rast, "Consome", "REST")
+
+Rel(spa, api, "Consome", "REST")
+
+Rel(mobileApp, ops, "Consome", "REST")
+Rel(mobileApp, auth, "Consome", "REST")
+@enduml

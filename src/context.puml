@@ -1,0 +1,31 @@
+@startuml contexto
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/users_cog.puml
+!include FONTAWESOME/user_check.puml
+!include FONTAWESOME/search_location.puml
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/money_check_alt.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(userDefault, "Usuário", "Público", $sprite="users")
+Person(userOps, "Colaborador", "Restrito", $sprite="user_check")
+Person(userAdmin, "Administrador", "Admin", $sprite="users_cog")
+
+System(app, "Aplicação", "PetHub", $sprite="server")
+
+System_Ext(banc, "API de Pagamentos", "Transações Financeiras", $sprite="money_check_alt")
+System_Ext(rast, "API de Rastreamento", "Rastreamento Veicular", $sprite="search_location")
+
+Rel(userDefault, app, "Utiliza")
+Rel(userOps, app, "Utiliza")
+Rel(userAdmin, app, "Utiliza")
+
+Rel(app, banc, "Consome", "REST")
+Rel(app, rast, "Consome", "REST")
+
+@enduml
